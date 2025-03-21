@@ -328,6 +328,24 @@
                 return;
             }
 
+            // Відстеження комбінації Ctrl + Shift для зміни мови
+            if (event.ctrlKey && event.shiftKey) {
+                currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
+                createKeyboard(currentLayout);
+                updateLayoutHint();
+                return;
+            }
+
+            // Введення символів при натисканні Shift + цифра
+            if (isShiftActive && /^\d$/.test(event.key)) {
+                const index = layouts[currentLayout].keys.indexOf(event.key);
+                if (index !== -1 && layouts[currentLayout].symbols[index]) {
+                    screen.textContent += layouts[currentLayout].symbols[index];
+                    event.preventDefault(); // Забороняємо стандартну поведінку браузера
+                }
+                return;
+            }
+
             const key = event.key.toLowerCase();
             const layoutKeys = layouts[currentLayout].keys.map(k => k.toLowerCase());
 
