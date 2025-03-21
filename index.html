@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OldPC Keyboard Simulator</title>
     <style>
         body {
@@ -17,6 +17,7 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            touch-action: manipulation; /* Заборона зуму на мобільних пристроях */
         }
 
         .monitor {
@@ -257,8 +258,17 @@
 
                 button.addEventListener('click', () => {
                     if (!pressTimer) {
-                        // Коротке натискання: вводимо цифру
-                        screen.textContent += isShiftActive ? key.toUpperCase() : key;
+                        // Коротке натискання: вводимо цифру або літеру
+                        if (isShiftActive && layouts[layout].symbols[index]) {
+                            screen.textContent += layouts[layout].symbols[index]; // Вводимо символ, якщо Shift активний
+                        } else {
+                            screen.textContent += isShiftActive ? key.toUpperCase() : key;
+                        }
+                        // Знімаємо Shift після введення
+                        if (isShiftActive && !isShiftLocked) {
+                            isShiftActive = false;
+                            shiftButton.classList.remove('active');
+                        }
                     }
                 });
 
@@ -320,7 +330,7 @@
                     // Якщо Shift активний, вводимо символ
                     screen.textContent += layouts[currentLayout].symbols[index];
                 } else {
-                    // Якщо Shift не активний, вводимо цифру
+                    // Якщо Shift не активний, вводимо цифру або літеру
                     screen.textContent += event.shiftKey ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
                 }
             } else if (key === 'backspace') {
