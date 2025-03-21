@@ -139,7 +139,7 @@
             <button id="backspace">Backspace</button>
             <button id="clear">Очистити</button>
             <button id="copy">Копіювати</button>
-            <button id="change-layout">Розкладка</button>
+            <button id="change-layout">Розкладка: QWERTY</button>
         </div>
         <!-- Клавіатура -->
         <div class="keyboard-layout" id="keyboard-layout">
@@ -269,6 +269,7 @@
         function updateLayoutHint() {
             const nextLayout = currentLayout === 'qwerty' ? 'ЙЦУКЕН' : 'QWERTY';
             nextLayoutHint.textContent = nextLayout;
+            changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
         }
 
         // Зміна розкладки
@@ -280,11 +281,7 @@
 
         // Shift
         shiftButton.addEventListener('click', () => {
-            if (isShiftLocked) {
-                isShiftActive = !isShiftActive;
-            } else {
-                isShiftActive = true;
-            }
+            isShiftActive = !isShiftActive;
             shiftButton.classList.toggle('active', isShiftActive);
             createKeyboard(currentLayout);
         });
@@ -324,7 +321,7 @@
                     screen.textContent += layouts[currentLayout].symbols[index];
                 } else {
                     // Якщо Shift не активний, вводимо цифру
-                    screen.textContent += isShiftActive ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
+                    screen.textContent += event.shiftKey ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
                 }
             } else if (key === 'backspace') {
                 screen.textContent = screen.textContent.slice(0, -1); // Видаляємо останній символ
