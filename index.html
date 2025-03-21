@@ -321,20 +321,40 @@
 
         // Введення з клавіатури ПК
         document.addEventListener('keydown', (event) => {
+            if (event.key === 'Shift') {
+                // Якщо натиснуто Shift на клавіатурі ПК
+                isShiftActive = true;
+                shiftButton.classList.add('active');
+                return;
+            }
+
             const key = event.key.toLowerCase();
             const layoutKeys = layouts[currentLayout].keys.map(k => k.toLowerCase());
 
             if (layoutKeys.includes(key)) {
                 const index = layoutKeys.indexOf(key);
-                if (event.shiftKey && layouts[currentLayout].symbols[index]) {
+                if (isShiftActive && layouts[currentLayout].symbols[index]) {
                     // Якщо Shift активний, вводимо символ
                     screen.textContent += layouts[currentLayout].symbols[index];
                 } else {
                     // Якщо Shift не активний, вводимо цифру або літеру
-                    screen.textContent += event.shiftKey ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
+                    screen.textContent += isShiftActive ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
+                }
+                // Знімаємо Shift після введення
+                if (isShiftActive && !isShiftLocked) {
+                    isShiftActive = false;
+                    shiftButton.classList.remove('active');
                 }
             } else if (key === 'backspace') {
                 screen.textContent = screen.textContent.slice(0, -1); // Видаляємо останній символ
+            }
+        });
+
+        // Відпускання Shift на клавіатурі ПК
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Shift') {
+                isShiftActive = false;
+                shiftButton.classList.remove('active');
             }
         });
 
