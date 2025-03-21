@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old PC Keyboard Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .monitor {
+            background-color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            border: 5px solid #555;
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen {
+            background-color: #222;
+            width: 90%;
+            height: 90%;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            color: #0f0;
+        }
+
+        .keyboard {
+            margin-top: 20px;
+            background-color: #555;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .keyboard-layout {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .keyboard-layout button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #777;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.1s ease;
+        }
+
+        .keyboard-layout button:active {
+            background-color: #555;
+        }
+
+        .keyboard-layout button .symbol {
+            font-size: 12px;
+            color: #ff6666; /* Червоний колір для символів */
+            position: absolute;
+            top: 2px;
+            right: 2px;
+        }
+
+        .keyboard-layout button .alt-layout {
+            font-size: 10px;
+            color: #ffcc00;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .control-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .control-buttons button:hover {
+            background-color: #666;
+        }
+
+        #shift.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
+
+        .layout-hint {
+            font-size: 14px;
+            color: #ffcc00;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="monitor">
+        <div class="screen" id="screen">
+            <!-- Тут буде відображатися текст -->
+        </div>
+    </div>
+    <div class="keyboard">
+        <div class="keyboard-layout" id="keyboard-layout">
+            <!-- Клавіатура буде динамічно створюватися через JS -->
+        </div>
+        <div class="control-buttons">
+            <button id="shift">Shift (Натискання)</button>
+            <button id="backspace">Backspace</button>
+            <button id="clear">Очистити</button>
+            <button id="copy">Копіювати</button>
+            <button id="change-layout">Змінити розкладку</button>
+        </div>
+        <div class="layout-hint" id="layout-hint">
+            Наступна розкладка: <span id="next-layout">ЙЦУКЕН</span>
+        </div>
+    </div>
+    <script>
+        const screen = document.getElementById('screen');
+        const keyboardLayout = document.getElementById('keyboard-layout');
+        const changeLayoutButton = document.getElementById('change-layout');
+        const nextLayoutHint = document.getElementById('next-layout');
+        const shiftButton = document.getElementById('shift');
+        const backspaceButton = document.getElementById('backspace');
+        const clearButton = document.getElementById('clear');
+        const copyButton = document.getElementById('copy');
+
+        let currentLayout = 'qwerty';
+        let isShiftActive = false;
+        let isShiftLocked = false;
+
+        const layouts = {
+            qwerty: {
+                keys: [
+                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
+                    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+                    'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'
+                ],
+                symbols: [
+                    '!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+                    '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', ''
+                ],
+                altKeys: [
+                    '', '', '', '', '', '', '', '', '', '',
+                    'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з',
+                    'ф', 'і', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж',
+                    'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.'
+                ]
+            },
+            йцукен: {
+                keys: [
+                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                    'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з',
+                    'ф', 'і', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж',
+                    'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.'
+                ],
+                symbols: [
+                    '!', '"', '№', ';', '%', ':', '?', '*', '(', ')',
+                    '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', ''
+                ],
+                altKeys: [
+                    '', '', '', '', '', '', '', '', '', '',
+                    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
+                    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+                    'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'
+                ]
+            }
+        };
+
+        let pressTimer = null;
+        const longPressDelay = 500; // Затримка для довгого натискання (в мілісекундах)
+
+        function createKeyboard(layout) {
+            keyboardLayout.innerHTML = '';
+            layouts[layout].keys.forEach((key, index) => {
+                const button = document.createElement('button');
+                button.textContent = isShiftActive ? key.toUpperCase() : key;
+
+                // Додаємо символи поруч із цифрами
+                if (layouts[layout].symbols[index]) {
+                    const symbol = document.createElement('div');
+                    symbol.className = 'symbol';
+                    symbol.textContent = layouts[layout].symbols[index];
+                    button.appendChild(symbol);
+                }
+
+                // Додаємо маленькі букви іншої розкладки
+                if (layouts[layout].altKeys[index]) {
+                    const altKey = document.createElement('div');
+                    altKey.className = 'alt-layout';
+                    altKey.textContent = isShiftActive ? layouts[layout].altKeys[index].toUpperCase() : layouts[layout].altKeys[index];
+                    button.appendChild(altKey);
+                }
+
+                // Обробка натискання кнопки
+                button.addEventListener('mousedown', () => {
+                    pressTimer = setTimeout(() => {
+                        // Довге натискання: вводимо символ
+                        if (layouts[layout].symbols[index]) {
+                            screen.textContent += layouts[layout].symbols[index];
+                        }
+                    }, longPressDelay);
+                });
+
+                button.addEventListener('mouseup', () => {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer); // Скасовуємо таймер, якщо кнопку відпустили раніше
+                        pressTimer = null;
+                    }
+                });
+
+                button.addEventListener('mouseleave', () => {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer); // Скасовуємо таймер, якщо курсор вийшов за межі кнопки
+                        pressTimer = null;
+                    }
+                });
+
+                button.addEventListener('click', () => {
+                    if (!pressTimer) {
+                        // Коротке натискання: вводимо цифру
+                        screen.textContent += isShiftActive ? key.toUpperCase() : key;
+                    }
+                });
+
+                keyboardLayout.appendChild(button);
+            });
+        }
+
+        function updateLayoutHint() {
+            const nextLayout = currentLayout === 'qwerty' ? 'ЙЦУКЕН' : 'QWERTY';
+            nextLayoutHint.textContent = nextLayout;
+        }
+
+        // Зміна розкладки
+        changeLayoutButton.addEventListener('click', () => {
+            currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
+            createKeyboard(currentLayout);
+            updateLayoutHint();
+        });
+
+        // Shift
+        shiftButton.addEventListener('click', () => {
+            if (isShiftLocked) {
+                isShiftActive = !isShiftActive;
+            } else {
+                isShiftActive = true;
+            }
+            shiftButton.classList.toggle('active', isShiftActive);
+            createKeyboard(currentLayout);
+        });
+
+        // Блокування Shift
+        shiftButton.addEventListener('dblclick', () => {
+            isShiftLocked = !isShiftLocked;
+            shiftButton.textContent = isShiftLocked ? 'Shift (Блокування)' : 'Shift (Натискання)';
+        });
+
+        // Backspace
+        backspaceButton.addEventListener('click', () => {
+            screen.textContent = screen.textContent.slice(0, -1);
+        });
+
+        // Очищення екрану
+        clearButton.addEventListener('click', () => {
+            screen.textContent = '';
+        });
+
+        // Копіювання тексту
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(screen.textContent)
+                .then(() => alert('Текст скопійовано в буфер обміну!'))
+                .catch(() => alert('Помилка копіювання тексту.'));
+        });
+
+        // Введення з клавіатури ПК
+        document.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+            const layoutKeys = layouts[currentLayout].keys.map(k => k.toLowerCase());
+
+            if (layoutKeys.includes(key)) {
+                const index = layoutKeys.indexOf(key);
+                if (event.shiftKey && layouts[currentLayout].symbols[index]) {
+                    // Якщо Shift активний, вводимо символ
+                    screen.textContent += layouts[currentLayout].symbols[index];
+                } else {
+                    // Якщо Shift не активний, вводимо цифру
+                    screen.textContent += isShiftActive ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
+                }
+            } else if (key === 'backspace') {
+                screen.textContent = screen.textContent.slice(0, -1); // Видаляємо останній символ
+            }
+        });
+
+        // Ініціалізація клавіатури
+        createKeyboard(currentLayout);
+        updateLayoutHint();
+    </script>
+</body>
+</html>
