@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OldPC Keyboard Simulator</title>
     <style>
+        /* Базові стилі */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -16,21 +17,185 @@
             padding: 20px;
             box-sizing: border-box;
             touch-action: manipulation;
+            transition: all 0.3s ease;
+        }
+
+        /* Стилі для оригінальної теми (Retro Green) */
+        .theme-retro {
             background-color: #002200;
             color: #00FF00;
         }
+        .theme-retro .monitor {
+            background-color: #000;
+            border-color: #555;
+        }
+        .theme-retro .screen {
+            background-color: #222;
+            color: #00FF00;
+        }
+        .theme-retro .keyboard {
+            background-color: #555;
+        }
+        .theme-retro button {
+            background-color: #777;
+            color: #fff;
+        }
+        .theme-retro .symbol {
+            color: #ff6666;
+        }
+        .theme-retro .alt-layout {
+            color: #ffcc00;
+        }
+        .theme-retro #shift.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
+        .theme-retro .digit.shift-active {
+            background-color: #444 !important;
+            color: #fff !important;
+        }
 
+        /* Стилі для додаткових тем */
+        /* Matrix Theme */
+        .theme-matrix {
+            background-color: #000;
+            color: #00FF41;
+        }
+        .theme-matrix .monitor {
+            background-color: #000;
+            border-color: #00FF41;
+        }
+        .theme-matrix .screen {
+            background-color: #000;
+            color: #00FF41;
+            text-shadow: 0 0 5px #00FF41;
+        }
+        .theme-matrix .keyboard {
+            background-color: #111;
+        }
+        .theme-matrix button {
+            background-color: #222;
+            color: #00FF41;
+        }
+        .theme-matrix .digit.shift-active {
+            background-color: #333 !important;
+            color: #00FF41 !important;
+        }
+
+        /* Dark Blue Theme */
+        .theme-dark-blue {
+            background-color: #001f3f;
+            color: #7FDBFF;
+        }
+        .theme-dark-blue .monitor {
+            background-color: #000;
+            border-color: #0074D9;
+        }
+        .theme-dark-blue .screen {
+            background-color: #001f3f;
+            color: #7FDBFF;
+        }
+        .theme-dark-blue .keyboard {
+            background-color: #003366;
+        }
+        .theme-dark-blue button {
+            background-color: #0074D9;
+            color: #fff;
+        }
+        .theme-dark-blue .digit.shift-active {
+            background-color: #0055aa !important;
+            color: #fff !important;
+        }
+
+        /* Paper Theme */
+        .theme-paper {
+            background-color: #f5f5f0;
+            color: #333;
+        }
+        .theme-paper .monitor {
+            background-color: #e6e6e6;
+            border-color: #999;
+        }
+        .theme-paper .screen {
+            background-color: #f5f5f0;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .theme-paper .keyboard {
+            background-color: #e6e6e6;
+        }
+        .theme-paper button {
+            background-color: #d9d9d9;
+            color: #333;
+        }
+        .theme-paper .digit.shift-active {
+            background-color: #c0c0c0 !important;
+            color: #333 !important;
+        }
+
+        /* Purple Haze */
+        .theme-purple {
+            background-color: #2e0347;
+            color: #b967ff;
+        }
+        .theme-purple .monitor {
+            background-color: #1a0126;
+            border-color: #b967ff;
+        }
+        .theme-purple .screen {
+            background-color: #2e0347;
+            color: #b967ff;
+        }
+        .theme-purple .keyboard {
+            background-color: #1a0126;
+        }
+        .theme-purple button {
+            background-color: #4a0272;
+            color: #b967ff;
+        }
+        .theme-purple .digit.shift-active {
+            background-color: #3a015a !important;
+            color: #b967ff !important;
+        }
+
+        /* Amber Theme */
+        .theme-amber {
+            background-color: #332100;
+            color: #FFA500;
+        }
+        .theme-amber .monitor {
+            background-color: #1a1100;
+            border-color: #FFA500;
+        }
+        .theme-amber .screen {
+            background-color: #332100;
+            color: #FFA500;
+        }
+        .theme-amber .keyboard {
+            background-color: #1a1100;
+        }
+        .theme-amber button {
+            background-color: #664200;
+            color: #FFA500;
+        }
+        .theme-amber .digit.shift-active {
+            background-color: #553300 !important;
+            color: #FFA500 !important;
+        }
+
+        /* Загальні стилі компонентів */
         .monitor {
             padding: 20px;
             border-radius: 10px;
-            border: 5px solid #555;
-            background-color: #000;
+            border: 5px solid;
             width: 100%;
             max-width: 800px;
             height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
 
         .screen {
@@ -42,8 +207,8 @@
             font-size: 24px;
             white-space: pre-wrap;
             word-wrap: break-word;
-            background-color: #222;
-            color: #00FF00;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
 
         .keyboard {
@@ -53,7 +218,7 @@
             width: 100%;
             max-width: 800px;
             text-align: center;
-            background-color: #555;
+            transition: all 0.3s ease;
         }
 
         .keyboard-layout {
@@ -71,8 +236,6 @@
             cursor: pointer;
             position: relative;
             transition: all 0.1s ease;
-            background-color: #777;
-            color: #fff;
         }
 
         .keyboard-layout button:active {
@@ -84,7 +247,6 @@
             position: absolute;
             top: 2px;
             right: 2px;
-            color: #ff6666;
         }
 
         .keyboard-layout button .alt-layout {
@@ -92,7 +254,6 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            color: #ffcc00;
         }
 
         .control-buttons {
@@ -102,71 +263,149 @@
             margin-bottom: 10px;
         }
 
+        .arrow-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .arrow-buttons button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
         .control-buttons button {
             padding: 10px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            background-color: #777;
-            color: #fff;
+            transition: all 0.1s ease;
         }
 
         #shift.active {
-            background-color: #ffcc00;
-            color: #000;
+            font-weight: bold;
         }
 
         .layout-hint {
             font-size: 14px;
             margin-top: 5px;
-            color: #fff;
         }
 
         .keyboard-layout button.shift-active {
             font-size: 22px;
         }
 
-        .keyboard-layout button.digit.shift-active {
-            background-color: #444;
-        }
-
         .keyboard-layout button.active {
             transform: scale(0.95);
         }
 
-        .arrow-keys {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            margin-top: 10px;
+        /* Стилі для перемикача тем */
+        .theme-selector {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .arrow-keys button {
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
+        .theme-btn {
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 2px solid transparent;
             cursor: pointer;
-            background-color: #777;
-            color: #fff;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.7);
+        }
+
+        /* Специфічні кольори для кнопок тем */
+        .theme-retro-btn {
+            background-color: #002200;
+            color: #00FF00;
+        }
+
+        .theme-matrix-btn {
+            background-color: #000;
+            color: #00FF41;
+        }
+
+        .theme-dark-blue-btn {
+            background-color: #001f3f;
+            color: #7FDBFF;
+        }
+
+        .theme-paper-btn {
+            background-color: #f5f5f0;
+            color: #333;
+        }
+
+        .theme-purple-btn {
+            background-color: #2e0347;
+            color: #b967ff;
+        }
+
+        .theme-amber-btn {
+            background-color: #332100;
+            color: #FFA500;
+        }
+
+        /* Стилі для курсора */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: currentColor;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        /* Стилі для виділеної кнопки */
+        .control-buttons button.selected {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
-<body>
+<body class="theme-retro">
     <div class="monitor">
         <div class="screen" id="screen"></div>
     </div>
     <div class="keyboard">
-        <div class="control-buttons" id="control-buttons">
+        <div class="control-buttons">
             <button id="shift">Shift</button>
             <button id="backspace">Backspace</button>
-            <button id="clear">Очистити</button>
+            <button id="clear" class="selected">Очистити</button>
             <button id="copy">Копіювати</button>
             <button id="change-layout">Розкладка: QWERTY</button>
         </div>
         <div class="keyboard-layout" id="keyboard-layout"></div>
-        <div class="arrow-keys">
+        <div class="arrow-buttons">
+            <button></button>
+            <button id="arrow-up">↑</button>
+            <button></button>
             <button id="arrow-left">←</button>
             <button id="arrow-down">↓</button>
             <button id="arrow-right">→</button>
@@ -175,25 +414,47 @@
             Наступна розкладка: <span id="next-layout">ЙЦУКЕН</span>
         </div>
     </div>
+
+    <!-- Перемикач тем -->
+    <div class="theme-selector">
+        <button class="theme-btn theme-retro-btn active" onclick="changeTheme('theme-retro')">Retro Green</button>
+        <button class="theme-btn theme-matrix-btn" onclick="changeTheme('theme-matrix')">Matrix</button>
+        <button class="theme-btn theme-dark-blue-btn" onclick="changeTheme('theme-dark-blue')">Dark Blue</button>
+        <button class="theme-btn theme-paper-btn" onclick="changeTheme('theme-paper')">Paper</button>
+        <button class="theme-btn theme-purple-btn" onclick="changeTheme('theme-purple')">Purple</button>
+        <button class="theme-btn theme-amber-btn" onclick="changeTheme('theme-amber')">Amber</button>
+    </div>
+
     <script>
+        // Функція зміни теми
+        function changeTheme(themeName) {
+            document.body.className = themeName;
+            
+            // Оновлення активних кнопок тем
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
         const screen = document.getElementById('screen');
         const keyboardLayout = document.getElementById('keyboard-layout');
-        const controlButtons = document.getElementById('control-buttons');
         const changeLayoutButton = document.getElementById('change-layout');
         const nextLayoutHint = document.getElementById('next-layout');
         const shiftButton = document.getElementById('shift');
         const backspaceButton = document.getElementById('backspace');
         const clearButton = document.getElementById('clear');
         const copyButton = document.getElementById('copy');
-        const arrowLeft = document.getElementById('arrow-left');
+        const arrowUp = document.getElementById('arrow-up');
         const arrowDown = document.getElementById('arrow-down');
+        const arrowLeft = document.getElementById('arrow-left');
         const arrowRight = document.getElementById('arrow-right');
 
         let currentLayout = 'qwerty';
         let isShiftActive = false;
-        let isCapsLock = false;
-        let detectedLanguage = 'en';
-        let focusedControlButton = 0;
+        let cursorPosition = 0;
+        let textArray = [];
+        let selectedControlButtonIndex = 2; // Початковий вибір кнопки "Очистити"
 
         const layouts = {
             qwerty: {
@@ -238,52 +499,41 @@
             }
         };
 
+        // Функція для оновлення відображення тексту з курсором
+        function updateScreenWithCursor() {
+            const beforeCursor = textArray.slice(0, cursorPosition).join('');
+            const afterCursor = textArray.slice(cursorPosition).join('');
+            screen.innerHTML = beforeCursor + '<span class="cursor"></span>' + afterCursor;
+        }
+
+        // Функція для вставки символу на позицію курсора
+        function insertAtCursor(char) {
+            textArray.splice(cursorPosition, 0, char);
+            cursorPosition++;
+            updateScreenWithCursor();
+        }
+
         function createKeyboard(layout) {
             keyboardLayout.innerHTML = '';
             const layoutData = layouts[layout];
             
-            // Додаємо Backspace в кінці рядка з літерами
-            const keysWithBackspace = [...layoutData.keys];
-            keysWithBackspace.splice(29, 0, 'Backspace'); // Вставляємо Backspace після ';'
-            
-            keysWithBackspace.forEach((key, index) => {
-                if (index === 29) return; // Пропускаємо оригінальний Backspace
-                
+            layoutData.keys.forEach((key, index) => {
                 const button = document.createElement('button');
                 const isDigit = /^\d$/.test(key);
-                const isBackspace = key === 'Backspace';
-                
-                if (isBackspace) {
-                    button.textContent = '←';
-                    button.style.gridColumn = 'span 2';
-                    button.style.backgroundColor = '#ff6666';
-                    button.addEventListener('click', () => {
-                        screen.textContent = screen.textContent.slice(0, -1);
-                    });
-                    keyboardLayout.appendChild(button);
-                    return;
-                }
                 
                 // Встановлюємо основний текст кнопки
-                if (isShiftActive || isCapsLock) {
-                    button.textContent = isDigit ? key : key.toUpperCase();
-                } else {
-                    button.textContent = key;
-                }
+                button.textContent = isShiftActive ? (isDigit ? layoutData.symbols[index] || key : key.toUpperCase()) : key;
                 
-                // Додаємо символи для цифр
+                // Додаємо символи для цифр (завжди видимі)
                 if (layoutData.symbols[index]) {
                     const symbol = document.createElement('div');
                     symbol.className = 'symbol';
                     symbol.textContent = layoutData.symbols[index];
-                    if ((isShiftActive || isCapsLock) && isDigit) {
-                        symbol.style.display = 'none';
-                    }
                     button.appendChild(symbol);
                 }
                 
-                // Додаємо альтернативні літери
-                if (layoutData.altKeys[index] && !isDigit) {
+                // Додаємо альтернативні літери (завжди видимі)
+                if (layoutData.altKeys[index]) {
                     const altKey = document.createElement('div');
                     altKey.className = 'alt-layout';
                     altKey.textContent = layoutData.altKeys[index];
@@ -292,23 +542,22 @@
                 
                 if (isDigit) {
                     button.classList.add('digit');
-                }
-                
-                if (isShiftActive || isCapsLock) {
-                    button.classList.add('shift-active');
-                    if (isDigit) {
-                        button.textContent = layoutData.symbols[index] || key;
+                    if (isShiftActive) {
+                        button.classList.add('shift-active');
                     }
                 }
                 
                 button.addEventListener('click', () => {
-                    if ((isShiftActive || isCapsLock) && isDigit) {
-                        screen.textContent += layoutData.symbols[index];
-                    } else if (isShiftActive || isCapsLock) {
-                        screen.textContent += key.toUpperCase();
+                    let charToInsert;
+                    if (isShiftActive && isDigit) {
+                        charToInsert = layoutData.symbols[index];
+                    } else if (isShiftActive) {
+                        charToInsert = key.toUpperCase();
                     } else {
-                        screen.textContent += key;
+                        charToInsert = key;
                     }
+                    
+                    insertAtCursor(charToInsert);
                     
                     if (isShiftActive && !isDigit) {
                         isShiftActive = false;
@@ -325,37 +574,57 @@
             nextLayoutHint.textContent = currentLayout === 'qwerty' ? 'ЙЦУКЕН' : 'QWERTY';
         }
 
-        function detectLanguage(text) {
-            const ukrChars = /[іїєґІЇЄҐ]/;
-            return ukrChars.test(text) ? 'uk' : 'en';
-        }
-
-        function switchLayoutBasedOnLanguage() {
-            if (detectedLanguage === 'uk' && currentLayout !== 'йцукен') {
-                currentLayout = 'йцукен';
-                createKeyboard(currentLayout);
-                updateLayoutHint();
-                changeLayoutButton.textContent = 'Розкладка: ЙЦУКЕН';
-            } else if (detectedLanguage === 'en' && currentLayout !== 'qwerty') {
-                currentLayout = 'qwerty';
-                createKeyboard(currentLayout);
-                updateLayoutHint();
-                changeLayoutButton.textContent = 'Розкладка: QWERTY';
-            }
-        }
-
-        function updateControlButtonsFocus() {
-            const buttons = controlButtons.querySelectorAll('button');
-            buttons.forEach((btn, i) => {
-                if (i === focusedControlButton) {
-                    btn.style.backgroundColor = '#ffcc00';
-                    btn.style.color = '#000';
+        // Функція для оновлення виділення кнопок управління
+        function updateControlButtonsSelection() {
+            const controlButtons = document.querySelectorAll('.control-buttons button');
+            controlButtons.forEach((button, index) => {
+                if (index === selectedControlButtonIndex) {
+                    button.classList.add('selected');
                 } else {
-                    btn.style.backgroundColor = '#777';
-                    btn.style.color = '#fff';
+                    button.classList.remove('selected');
                 }
             });
         }
+
+        // Функція для активації вибраної кнопки управління
+        function activateSelectedControlButton() {
+            const controlButtons = document.querySelectorAll('.control-buttons button');
+            if (selectedControlButtonIndex >= 0 && selectedControlButtonIndex < controlButtons.length) {
+                controlButtons[selectedControlButtonIndex].click();
+            }
+        }
+
+        // Обробники подій для стрілочок
+        arrowUp.addEventListener('click', () => {
+            // Переміщення вибору вгору по кнопкам управління
+            if (selectedControlButtonIndex > 0) {
+                selectedControlButtonIndex--;
+                updateControlButtonsSelection();
+            }
+        });
+
+        arrowDown.addEventListener('click', () => {
+            // Переміщення вибору вниз по кнопкам управління
+            const controlButtons = document.querySelectorAll('.control-buttons button');
+            if (selectedControlButtonIndex < controlButtons.length - 1) {
+                selectedControlButtonIndex++;
+                updateControlButtonsSelection();
+            }
+        });
+
+        arrowLeft.addEventListener('click', () => {
+            if (cursorPosition > 0) {
+                cursorPosition--;
+                updateScreenWithCursor();
+            }
+        });
+
+        arrowRight.addEventListener('click', () => {
+            if (cursorPosition < textArray.length) {
+                cursorPosition++;
+                updateScreenWithCursor();
+            }
+        });
 
         // Обробники подій
         shiftButton.addEventListener('click', () => {
@@ -366,40 +635,29 @@
 
         changeLayoutButton.addEventListener('click', () => {
             currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
-            detectedLanguage = currentLayout === 'йцукен' ? 'uk' : 'en';
             createKeyboard(currentLayout);
             updateLayoutHint();
             changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
         });
 
         backspaceButton.addEventListener('click', () => {
-            screen.textContent = screen.textContent.slice(0, -1);
+            if (cursorPosition > 0) {
+                textArray.splice(cursorPosition - 1, 1);
+                cursorPosition--;
+                updateScreenWithCursor();
+            }
         });
 
         clearButton.addEventListener('click', () => {
-            screen.textContent = '';
+            textArray = [];
+            cursorPosition = 0;
+            updateScreenWithCursor();
         });
 
         copyButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(screen.textContent)
+            navigator.clipboard.writeText(textArray.join(''))
                 .then(() => alert('Текст скопійовано!'))
                 .catch(() => alert('Помилка копіювання'));
-        });
-
-        // Навігація стрілками
-        arrowLeft.addEventListener('click', () => {
-            focusedControlButton = (focusedControlButton - 1 + 5) % 5;
-            updateControlButtonsFocus();
-        });
-
-        arrowRight.addEventListener('click', () => {
-            focusedControlButton = (focusedControlButton + 1) % 5;
-            updateControlButtonsFocus();
-        });
-
-        arrowDown.addEventListener('click', () => {
-            const buttons = controlButtons.querySelectorAll('button');
-            buttons[focusedControlButton].click();
         });
 
         // Обробка клавіатури ПК
@@ -411,58 +669,76 @@
                 return;
             }
 
-            if (e.key === 'CapsLock') {
-                isCapsLock = !isCapsLock;
-                createKeyboard(currentLayout);
-                return;
-            }
-
             if (e.key === 'Backspace') {
-                screen.textContent = screen.textContent.slice(0, -1);
-                return;
-            }
-
-            if (e.key === 'Delete') {
-                screen.textContent = '';
-                return;
-            }
-
-            if (e.key === 'ArrowLeft') {
-                focusedControlButton = (focusedControlButton - 1 + 5) % 5;
-                updateControlButtonsFocus();
-                return;
-            }
-
-            if (e.key === 'ArrowRight') {
-                focusedControlButton = (focusedControlButton + 1) % 5;
-                updateControlButtonsFocus();
-                return;
-            }
-
-            if (e.key === 'ArrowDown' || e.key === 'Enter') {
-                const buttons = controlButtons.querySelectorAll('button');
-                buttons[focusedControlButton].click();
-                return;
-            }
-
-            if (e.key === 'Alt') {
-                if (e.shiftKey) {
-                    currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
-                    detectedLanguage = currentLayout === 'йцукен' ? 'uk' : 'en';
-                    createKeyboard(currentLayout);
-                    updateLayoutHint();
-                    changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
+                if (cursorPosition > 0) {
+                    textArray.splice(cursorPosition - 1, 1);
+                    cursorPosition--;
+                    updateScreenWithCursor();
                 }
                 return;
             }
 
+            if (e.key === 'Delete') {
+                if (cursorPosition < textArray.length) {
+                    textArray.splice(cursorPosition, 1);
+                    updateScreenWithCursor();
+                }
+                return;
+            }
+
+            if (e.key === 'Alt' && e.shiftKey) {
+                currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
+                createKeyboard(currentLayout);
+                updateLayoutHint();
+                return;
+            }
+
+            // Обробка стрілочок
+            if (e.key === 'ArrowLeft') {
+                if (cursorPosition > 0) {
+                    cursorPosition--;
+                    updateScreenWithCursor();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowRight') {
+                if (cursorPosition < textArray.length) {
+                    cursorPosition++;
+                    updateScreenWithCursor();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowUp') {
+                // Переміщення вибору вгору по кнопкам управління
+                if (selectedControlButtonIndex > 0) {
+                    selectedControlButtonIndex--;
+                    updateControlButtonsSelection();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                // Переміщення вибору вниз по кнопкам управління
+                const controlButtons = document.querySelectorAll('.control-buttons button');
+                if (selectedControlButtonIndex < controlButtons.length - 1) {
+                    selectedControlButtonIndex++;
+                    updateControlButtonsSelection();
+                }
+                return;
+            }
+
+            if (e.key === 'Enter') {
+                // Активація вибраної кнопки управління
+                activateSelectedControlButton();
+                return;
+            }
+
             // Обробка введення з клавіатури ПК
-            if (e.key.length === 1) {
-                const char = isShiftActive || isCapsLock ? e.key.toUpperCase() : e.key.toLowerCase();
-                screen.textContent += char;
-                
-                detectedLanguage = detectLanguage(screen.textContent);
-                switchLayoutBasedOnLanguage();
+            if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+                const char = isShiftActive ? e.key.toUpperCase() : e.key.toLowerCase();
+                insertAtCursor(char);
                 
                 const buttons = document.querySelectorAll('.keyboard-layout button');
                 buttons.forEach(button => {
@@ -485,7 +761,8 @@
         // Ініціалізація
         createKeyboard(currentLayout);
         updateLayoutHint();
-        updateControlButtonsFocus();
+        updateScreenWithCursor();
+        updateControlButtonsSelection(); // Ініціалізуємо виділення кнопки "Очистити"
     </script>
 </body>
 </html>
