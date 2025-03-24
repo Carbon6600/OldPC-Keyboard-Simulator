@@ -78,6 +78,10 @@
             background-color: #222;
             color: #00FF41;
         }
+        .theme-matrix #shift.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
         .theme-matrix .digit.shift-active {
             background-color: #333 !important;
             color: #00FF41 !important;
@@ -102,6 +106,10 @@
         .theme-dark-blue button {
             background-color: #0074D9;
             color: #fff;
+        }
+        .theme-dark-blue #shift.active {
+            background-color: #ffcc00;
+            color: #000;
         }
         .theme-dark-blue .digit.shift-active {
             background-color: #0055aa !important;
@@ -129,6 +137,10 @@
             background-color: #d9d9d9;
             color: #333;
         }
+        .theme-paper #shift.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
         .theme-paper .digit.shift-active {
             background-color: #c0c0c0 !important;
             color: #333 !important;
@@ -154,6 +166,10 @@
             background-color: #4a0272;
             color: #b967ff;
         }
+        .theme-purple #shift.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
         .theme-purple .digit.shift-active {
             background-color: #3a015a !important;
             color: #b967ff !important;
@@ -178,6 +194,10 @@
         .theme-amber button {
             background-color: #664200;
             color: #FFA500;
+        }
+        .theme-amber #shift.active {
+            background-color: #ffcc00;
+            color: #000;
         }
         .theme-amber .digit.shift-active {
             background-color: #553300 !important;
@@ -431,7 +451,7 @@
             <button id="backspace">←</button>
             <button id="clear" class="selected">Очистити</button>
             <button id="copy">Копіювати</button>
-            <button id="change-layout">Розкладка</button>
+            <button id="change-layout">QWERTY</button>
         </div>
         <div class="keyboard-layout" id="keyboard-layout"></div>
         <div class="arrow-buttons">
@@ -669,7 +689,7 @@
             currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
             createKeyboard(currentLayout);
             updateLayoutHint();
-            changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
+            changeLayoutButton.textContent = currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН';
         });
 
         backspaceButton.addEventListener('click', () => {
@@ -722,6 +742,7 @@
                 currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
                 createKeyboard(currentLayout);
                 updateLayoutHint();
+                changeLayoutButton.textContent = currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН';
                 return;
             }
 
