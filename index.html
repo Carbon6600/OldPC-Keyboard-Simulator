@@ -7,8 +7,6 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #333;
-            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,14 +15,16 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            touch-action: manipulation; /* Заборона зуму на мобільних пристроях */
+            touch-action: manipulation;
+            background-color: #002200;
+            color: #00FF00;
         }
 
         .monitor {
-            background-color: #000;
             padding: 20px;
             border-radius: 10px;
             border: 5px solid #555;
+            background-color: #000;
             width: 100%;
             max-width: 800px;
             height: 300px;
@@ -34,24 +34,26 @@
         }
 
         .screen {
-            background-color: #222;
             width: 90%;
             height: 90%;
             padding: 10px;
             overflow-y: auto;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 24px; /* Збільшений розмір тексту */
-            color: #0f0;
+            font-size: 24px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #222;
+            color: #00FF00;
         }
 
         .keyboard {
             margin-top: 20px;
-            background-color: #555;
             padding: 10px;
             border-radius: 5px;
             width: 100%;
             max-width: 800px;
             text-align: center;
+            background-color: #555;
         }
 
         .keyboard-layout {
@@ -62,35 +64,35 @@
         }
 
         .keyboard-layout button {
-            padding: 15px; /* Збільшений розмір кнопок */
-            font-size: 18px; /* Збільшений розмір тексту на кнопках */
-            background-color: #777;
-            color: #fff;
+            padding: 15px;
+            font-size: 18px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             position: relative;
-            transition: background-color 0.1s ease;
+            transition: all 0.1s ease;
+            background-color: #777;
+            color: #fff;
         }
 
         .keyboard-layout button:active {
-            background-color: #555;
+            transform: scale(0.95);
         }
 
         .keyboard-layout button .symbol {
-            font-size: 14px; /* Збільшений розмір символів */
-            color: #ff6666; /* Червоний колір для символів */
+            font-size: 14px;
             position: absolute;
             top: 2px;
             right: 2px;
+            color: #ff6666;
         }
 
         .keyboard-layout button .alt-layout {
-            font-size: 12px; /* Збільшений розмір альтернативних літер */
-            color: #ffcc00;
+            font-size: 12px;
             position: absolute;
             top: 2px;
             left: 2px;
+            color: #ffcc00;
         }
 
         .control-buttons {
@@ -103,16 +105,11 @@
         .control-buttons button {
             padding: 10px;
             font-size: 16px;
-            background-color: #444;
-            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.1s ease;
-        }
-
-        .control-buttons button:hover {
-            background-color: #666;
+            background-color: #777;
+            color: #fff;
         }
 
         #shift.active {
@@ -122,29 +119,57 @@
 
         .layout-hint {
             font-size: 14px;
-            color: #ffcc00;
             margin-top: 5px;
+            color: #fff;
+        }
+
+        .keyboard-layout button.shift-active {
+            font-size: 22px;
+        }
+
+        .keyboard-layout button.digit.shift-active {
+            background-color: #444;
+        }
+
+        .keyboard-layout button.active {
+            transform: scale(0.95);
+        }
+
+        .arrow-keys {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .arrow-keys button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #777;
+            color: #fff;
         }
     </style>
 </head>
 <body>
     <div class="monitor">
-        <div class="screen" id="screen">
-            <!-- Тут буде відображатися текст -->
-        </div>
+        <div class="screen" id="screen"></div>
     </div>
     <div class="keyboard">
-        <!-- Кнопки управління -->
-        <div class="control-buttons">
+        <div class="control-buttons" id="control-buttons">
             <button id="shift">Shift</button>
             <button id="backspace">Backspace</button>
             <button id="clear">Очистити</button>
             <button id="copy">Копіювати</button>
             <button id="change-layout">Розкладка: QWERTY</button>
         </div>
-        <!-- Клавіатура -->
-        <div class="keyboard-layout" id="keyboard-layout">
-            <!-- Клавіатура буде динамічно створюватися через JS -->
+        <div class="keyboard-layout" id="keyboard-layout"></div>
+        <div class="arrow-keys">
+            <button id="arrow-left">←</button>
+            <button id="arrow-down">↓</button>
+            <button id="arrow-right">→</button>
         </div>
         <div class="layout-hint" id="layout-hint">
             Наступна розкладка: <span id="next-layout">ЙЦУКЕН</span>
@@ -153,16 +178,22 @@
     <script>
         const screen = document.getElementById('screen');
         const keyboardLayout = document.getElementById('keyboard-layout');
+        const controlButtons = document.getElementById('control-buttons');
         const changeLayoutButton = document.getElementById('change-layout');
         const nextLayoutHint = document.getElementById('next-layout');
         const shiftButton = document.getElementById('shift');
         const backspaceButton = document.getElementById('backspace');
         const clearButton = document.getElementById('clear');
         const copyButton = document.getElementById('copy');
+        const arrowLeft = document.getElementById('arrow-left');
+        const arrowDown = document.getElementById('arrow-down');
+        const arrowRight = document.getElementById('arrow-right');
 
         let currentLayout = 'qwerty';
         let isShiftActive = false;
-        let isShiftLocked = false;
+        let isCapsLock = false;
+        let detectedLanguage = 'en';
+        let focusedControlButton = 0;
 
         const layouts = {
             qwerty: {
@@ -207,178 +238,254 @@
             }
         };
 
-        let pressTimer = null;
-        const longPressDelay = 500; // Затримка для довгого натискання (в мілісекундах)
-
         function createKeyboard(layout) {
             keyboardLayout.innerHTML = '';
-            layouts[layout].keys.forEach((key, index) => {
+            const layoutData = layouts[layout];
+            
+            // Додаємо Backspace в кінці рядка з літерами
+            const keysWithBackspace = [...layoutData.keys];
+            keysWithBackspace.splice(29, 0, 'Backspace'); // Вставляємо Backspace після ';'
+            
+            keysWithBackspace.forEach((key, index) => {
+                if (index === 29) return; // Пропускаємо оригінальний Backspace
+                
                 const button = document.createElement('button');
-                button.textContent = isShiftActive ? key.toUpperCase() : key;
-
-                // Додаємо символи поруч із цифрами
-                if (layouts[layout].symbols[index]) {
+                const isDigit = /^\d$/.test(key);
+                const isBackspace = key === 'Backspace';
+                
+                if (isBackspace) {
+                    button.textContent = '←';
+                    button.style.gridColumn = 'span 2';
+                    button.style.backgroundColor = '#ff6666';
+                    button.addEventListener('click', () => {
+                        screen.textContent = screen.textContent.slice(0, -1);
+                    });
+                    keyboardLayout.appendChild(button);
+                    return;
+                }
+                
+                // Встановлюємо основний текст кнопки
+                if (isShiftActive || isCapsLock) {
+                    button.textContent = isDigit ? key : key.toUpperCase();
+                } else {
+                    button.textContent = key;
+                }
+                
+                // Додаємо символи для цифр
+                if (layoutData.symbols[index]) {
                     const symbol = document.createElement('div');
                     symbol.className = 'symbol';
-                    symbol.textContent = layouts[layout].symbols[index];
+                    symbol.textContent = layoutData.symbols[index];
+                    if ((isShiftActive || isCapsLock) && isDigit) {
+                        symbol.style.display = 'none';
+                    }
                     button.appendChild(symbol);
                 }
-
-                // Додаємо маленькі букви іншої розкладки
-                if (layouts[layout].altKeys[index]) {
+                
+                // Додаємо альтернативні літери
+                if (layoutData.altKeys[index] && !isDigit) {
                     const altKey = document.createElement('div');
                     altKey.className = 'alt-layout';
-                    altKey.textContent = isShiftActive ? layouts[layout].altKeys[index].toUpperCase() : layouts[layout].altKeys[index];
+                    altKey.textContent = layoutData.altKeys[index];
                     button.appendChild(altKey);
                 }
-
-                // Обробка натискання кнопки
-                button.addEventListener('mousedown', () => {
-                    pressTimer = setTimeout(() => {
-                        // Довге натискання: вводимо символ
-                        if (layouts[layout].symbols[index]) {
-                            screen.textContent += layouts[layout].symbols[index];
-                        }
-                    }, longPressDelay);
-                });
-
-                button.addEventListener('mouseup', () => {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer); // Скасовуємо таймер, якщо кнопку відпустили раніше
-                        pressTimer = null;
+                
+                if (isDigit) {
+                    button.classList.add('digit');
+                }
+                
+                if (isShiftActive || isCapsLock) {
+                    button.classList.add('shift-active');
+                    if (isDigit) {
+                        button.textContent = layoutData.symbols[index] || key;
                     }
-                });
-
-                button.addEventListener('mouseleave', () => {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer); // Скасовуємо таймер, якщо курсор вийшов за межі кнопки
-                        pressTimer = null;
-                    }
-                });
-
+                }
+                
                 button.addEventListener('click', () => {
-                    if (!pressTimer) {
-                        // Коротке натискання: вводимо цифру або літеру
-                        if (isShiftActive && layouts[layout].symbols[index]) {
-                            screen.textContent += layouts[layout].symbols[index]; // Вводимо символ, якщо Shift активний
-                        } else {
-                            screen.textContent += isShiftActive ? key.toUpperCase() : key;
-                        }
-                        // Знімаємо Shift після введення
-                        if (isShiftActive && !isShiftLocked) {
-                            isShiftActive = false;
-                            shiftButton.classList.remove('active');
-                        }
+                    if ((isShiftActive || isCapsLock) && isDigit) {
+                        screen.textContent += layoutData.symbols[index];
+                    } else if (isShiftActive || isCapsLock) {
+                        screen.textContent += key.toUpperCase();
+                    } else {
+                        screen.textContent += key;
+                    }
+                    
+                    if (isShiftActive && !isDigit) {
+                        isShiftActive = false;
+                        shiftButton.classList.remove('active');
+                        createKeyboard(currentLayout);
                     }
                 });
-
+                
                 keyboardLayout.appendChild(button);
             });
         }
 
         function updateLayoutHint() {
-            const nextLayout = currentLayout === 'qwerty' ? 'ЙЦУКЕН' : 'QWERTY';
-            nextLayoutHint.textContent = nextLayout;
-            changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
+            nextLayoutHint.textContent = currentLayout === 'qwerty' ? 'ЙЦУКЕН' : 'QWERTY';
         }
 
-        // Зміна розкладки
-        changeLayoutButton.addEventListener('click', () => {
-            currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
-            createKeyboard(currentLayout);
-            updateLayoutHint();
-        });
+        function detectLanguage(text) {
+            const ukrChars = /[іїєґІЇЄҐ]/;
+            return ukrChars.test(text) ? 'uk' : 'en';
+        }
 
-        // Shift
+        function switchLayoutBasedOnLanguage() {
+            if (detectedLanguage === 'uk' && currentLayout !== 'йцукен') {
+                currentLayout = 'йцукен';
+                createKeyboard(currentLayout);
+                updateLayoutHint();
+                changeLayoutButton.textContent = 'Розкладка: ЙЦУКЕН';
+            } else if (detectedLanguage === 'en' && currentLayout !== 'qwerty') {
+                currentLayout = 'qwerty';
+                createKeyboard(currentLayout);
+                updateLayoutHint();
+                changeLayoutButton.textContent = 'Розкладка: QWERTY';
+            }
+        }
+
+        function updateControlButtonsFocus() {
+            const buttons = controlButtons.querySelectorAll('button');
+            buttons.forEach((btn, i) => {
+                if (i === focusedControlButton) {
+                    btn.style.backgroundColor = '#ffcc00';
+                    btn.style.color = '#000';
+                } else {
+                    btn.style.backgroundColor = '#777';
+                    btn.style.color = '#fff';
+                }
+            });
+        }
+
+        // Обробники подій
         shiftButton.addEventListener('click', () => {
             isShiftActive = !isShiftActive;
             shiftButton.classList.toggle('active', isShiftActive);
             createKeyboard(currentLayout);
         });
 
-        // Блокування Shift
-        shiftButton.addEventListener('dblclick', () => {
-            isShiftLocked = !isShiftLocked;
-            shiftButton.textContent = isShiftLocked ? 'Shift (Блокування)' : 'Shift (Натискання)';
+        changeLayoutButton.addEventListener('click', () => {
+            currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
+            detectedLanguage = currentLayout === 'йцукен' ? 'uk' : 'en';
+            createKeyboard(currentLayout);
+            updateLayoutHint();
+            changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
         });
 
-        // Backspace
         backspaceButton.addEventListener('click', () => {
             screen.textContent = screen.textContent.slice(0, -1);
         });
 
-        // Очищення екрану
         clearButton.addEventListener('click', () => {
             screen.textContent = '';
         });
 
-        // Копіювання тексту
         copyButton.addEventListener('click', () => {
             navigator.clipboard.writeText(screen.textContent)
-                .then(() => alert('Текст скопійовано в буфер обміну!'))
-                .catch(() => alert('Помилка копіювання тексту.'));
+                .then(() => alert('Текст скопійовано!'))
+                .catch(() => alert('Помилка копіювання'));
         });
 
-        // Введення з клавіатури ПК
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Shift') {
-                // Якщо натиснуто Shift на клавіатурі ПК
+        // Навігація стрілками
+        arrowLeft.addEventListener('click', () => {
+            focusedControlButton = (focusedControlButton - 1 + 5) % 5;
+            updateControlButtonsFocus();
+        });
+
+        arrowRight.addEventListener('click', () => {
+            focusedControlButton = (focusedControlButton + 1) % 5;
+            updateControlButtonsFocus();
+        });
+
+        arrowDown.addEventListener('click', () => {
+            const buttons = controlButtons.querySelectorAll('button');
+            buttons[focusedControlButton].click();
+        });
+
+        // Обробка клавіатури ПК
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift') {
                 isShiftActive = true;
                 shiftButton.classList.add('active');
-                return;
-            }
-
-            // Відстеження комбінації Ctrl + Shift для зміни мови
-            if (event.ctrlKey && event.shiftKey) {
-                currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
                 createKeyboard(currentLayout);
-                updateLayoutHint();
                 return;
             }
 
-            // Введення символів при натисканні Shift + цифра
-            if (isShiftActive && /^\d$/.test(event.key)) {
-                const index = layouts[currentLayout].keys.indexOf(event.key);
-                if (index !== -1 && layouts[currentLayout].symbols[index]) {
-                    screen.textContent += layouts[currentLayout].symbols[index];
-                    event.preventDefault(); // Забороняємо стандартну поведінку браузера
+            if (e.key === 'CapsLock') {
+                isCapsLock = !isCapsLock;
+                createKeyboard(currentLayout);
+                return;
+            }
+
+            if (e.key === 'Backspace') {
+                screen.textContent = screen.textContent.slice(0, -1);
+                return;
+            }
+
+            if (e.key === 'Delete') {
+                screen.textContent = '';
+                return;
+            }
+
+            if (e.key === 'ArrowLeft') {
+                focusedControlButton = (focusedControlButton - 1 + 5) % 5;
+                updateControlButtonsFocus();
+                return;
+            }
+
+            if (e.key === 'ArrowRight') {
+                focusedControlButton = (focusedControlButton + 1) % 5;
+                updateControlButtonsFocus();
+                return;
+            }
+
+            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                const buttons = controlButtons.querySelectorAll('button');
+                buttons[focusedControlButton].click();
+                return;
+            }
+
+            if (e.key === 'Alt') {
+                if (e.shiftKey) {
+                    currentLayout = currentLayout === 'qwerty' ? 'йцукен' : 'qwerty';
+                    detectedLanguage = currentLayout === 'йцукен' ? 'uk' : 'en';
+                    createKeyboard(currentLayout);
+                    updateLayoutHint();
+                    changeLayoutButton.textContent = `Розкладка: ${currentLayout === 'qwerty' ? 'QWERTY' : 'ЙЦУКЕН'}`;
                 }
                 return;
             }
 
-            const key = event.key.toLowerCase();
-            const layoutKeys = layouts[currentLayout].keys.map(k => k.toLowerCase());
-
-            if (layoutKeys.includes(key)) {
-                const index = layoutKeys.indexOf(key);
-                if (isShiftActive && layouts[currentLayout].symbols[index]) {
-                    // Якщо Shift активний, вводимо символ
-                    screen.textContent += layouts[currentLayout].symbols[index];
-                } else {
-                    // Якщо Shift не активний, вводимо цифру або літеру
-                    screen.textContent += isShiftActive ? layouts[currentLayout].keys[index].toUpperCase() : layouts[currentLayout].keys[index];
-                }
-                // Знімаємо Shift після введення
-                if (isShiftActive && !isShiftLocked) {
-                    isShiftActive = false;
-                    shiftButton.classList.remove('active');
-                }
-            } else if (key === 'backspace') {
-                screen.textContent = screen.textContent.slice(0, -1); // Видаляємо останній символ
+            // Обробка введення з клавіатури ПК
+            if (e.key.length === 1) {
+                const char = isShiftActive || isCapsLock ? e.key.toUpperCase() : e.key.toLowerCase();
+                screen.textContent += char;
+                
+                detectedLanguage = detectLanguage(screen.textContent);
+                switchLayoutBasedOnLanguage();
+                
+                const buttons = document.querySelectorAll('.keyboard-layout button');
+                buttons.forEach(button => {
+                    if (button.textContent.trim().toLowerCase() === e.key.toLowerCase()) {
+                        button.classList.add('active');
+                        setTimeout(() => button.classList.remove('active'), 100);
+                    }
+                });
             }
         });
 
-        // Відпускання Shift на клавіатурі ПК
-        document.addEventListener('keyup', (event) => {
-            if (event.key === 'Shift') {
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift') {
                 isShiftActive = false;
                 shiftButton.classList.remove('active');
+                createKeyboard(currentLayout);
             }
         });
 
-        // Ініціалізація клавіатури
+        // Ініціалізація
         createKeyboard(currentLayout);
         updateLayoutHint();
+        updateControlButtonsFocus();
     </script>
 </body>
 </html>
