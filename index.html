@@ -286,14 +286,44 @@
             margin-bottom: 8px;
         }
 
+        .arrow-buttons-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
         .arrow-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-areas:
+                "shift up backspace"
+                "left down right";
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 3px;
-            margin-bottom: 8px;
             max-width: 200px;
-            margin-left: auto;
-            margin-right: auto;
+        }
+
+        #shift {
+            grid-area: shift;
+        }
+
+        #arrow-up {
+            grid-area: up;
+        }
+
+        #backspace {
+            grid-area: backspace;
+        }
+
+        #arrow-left {
+            grid-area: left;
+        }
+
+        #arrow-down {
+            grid-area: down;
+        }
+
+        #arrow-right {
+            grid-area: right;
         }
 
         .arrow-buttons button {
@@ -447,20 +477,20 @@
     </div>
     <div class="keyboard">
         <div class="control-buttons">
-            <button id="shift">Shift</button>
-            <button id="backspace">←</button>
             <button id="clear" class="selected">Очистити</button>
             <button id="copy">Копіювати</button>
             <button id="change-layout">QWERTY</button>
         </div>
         <div class="keyboard-layout" id="keyboard-layout"></div>
-        <div class="arrow-buttons">
-            <button></button>
-            <button id="arrow-up">↑</button>
-            <button></button>
-            <button id="arrow-left">←</button>
-            <button id="arrow-down">↓</button>
-            <button id="arrow-right">→</button>
+        <div class="arrow-buttons-container">
+            <div class="arrow-buttons">
+                <button id="shift">Shift</button>
+                <button id="arrow-up">↑</button>
+                <button id="backspace">←</button>
+                <button id="arrow-left">←</button>
+                <button id="arrow-down">↓</button>
+                <button id="arrow-right">→</button>
+            </div>
         </div>
         <div class="layout-hint" id="layout-hint">
             Наступна розкладка: <span id="next-layout">ЙЦУКЕН</span>
@@ -506,7 +536,7 @@
         let isShiftActive = false;
         let cursorPosition = 0;
         let textArray = [];
-        let selectedControlButtonIndex = 2; // Початковий вибір кнопки "Очистити"
+        let selectedControlButtonIndex = 0; // Початковий вибір кнопки "Очистити"
 
         const layouts = {
             qwerty: {
