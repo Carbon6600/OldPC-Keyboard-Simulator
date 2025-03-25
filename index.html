@@ -18,7 +18,11 @@
             box-sizing: border-box;
             touch-action: manipulation;
             transition: all 0.3s ease;
-            overflow-x: hidden;
+            overflow: hidden; /* Заборона прокрутки */
+            user-select: none; /* Заборона виділення тексту */
+            -webkit-user-select: none; /* Для Safari */
+            -moz-user-select: none; /* Для Firefox */
+            -ms-user-select: none; /* Для IE/Edge */
         }
 
         /* Стилі для оригінальної теми (Retro Green) */
@@ -33,6 +37,10 @@
         .theme-retro .screen {
             background-color: #222;
             color: #00FF00;
+            user-select: text; /* Дозволяємо виділення тільки в області екрану */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-retro .keyboard {
             background-color: #555;
@@ -70,6 +78,10 @@
             background-color: #000;
             color: #00FF41;
             text-shadow: 0 0 5px #00FF41;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-matrix .keyboard {
             background-color: #111;
@@ -99,6 +111,10 @@
         .theme-dark-blue .screen {
             background-color: #001f3f;
             color: #7FDBFF;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-dark-blue .keyboard {
             background-color: #003366;
@@ -129,6 +145,10 @@
             background-color: #f5f5f0;
             color: #333;
             border: 1px solid #ccc;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-paper .keyboard {
             background-color: #e6e6e6;
@@ -158,6 +178,10 @@
         .theme-purple .screen {
             background-color: #2e0347;
             color: #b967ff;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-purple .keyboard {
             background-color: #1a0126;
@@ -187,6 +211,10 @@
         .theme-amber .screen {
             background-color: #332100;
             color: #FFA500;
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
         .theme-amber .keyboard {
             background-color: #1a1100;
@@ -286,44 +314,14 @@
             margin-bottom: 8px;
         }
 
-        .arrow-buttons-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-
         .arrow-buttons {
             display: grid;
-            grid-template-areas:
-                "shift up backspace"
-                "left down right";
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 3px;
+            margin-bottom: 8px;
             max-width: 200px;
-        }
-
-        #shift {
-            grid-area: shift;
-        }
-
-        #arrow-up {
-            grid-area: up;
-        }
-
-        #backspace {
-            grid-area: backspace;
-        }
-
-        #arrow-left {
-            grid-area: left;
-        }
-
-        #arrow-down {
-            grid-area: down;
-        }
-
-        #arrow-right {
-            grid-area: right;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .arrow-buttons button {
@@ -477,20 +475,20 @@
     </div>
     <div class="keyboard">
         <div class="control-buttons">
+            <button id="shift">Shift</button>
+            <button id="backspace">←</button>
             <button id="clear" class="selected">Очистити</button>
             <button id="copy">Копіювати</button>
             <button id="change-layout">QWERTY</button>
         </div>
         <div class="keyboard-layout" id="keyboard-layout"></div>
-        <div class="arrow-buttons-container">
-            <div class="arrow-buttons">
-                <button id="shift">Shift</button>
-                <button id="arrow-up">↑</button>
-                <button id="backspace">←</button>
-                <button id="arrow-left">←</button>
-                <button id="arrow-down">↓</button>
-                <button id="arrow-right">→</button>
-            </div>
+        <div class="arrow-buttons">
+            <button></button>
+            <button id="arrow-up">↑</button>
+            <button></button>
+            <button id="arrow-left">←</button>
+            <button id="arrow-down">↓</button>
+            <button id="arrow-right">→</button>
         </div>
         <div class="layout-hint" id="layout-hint">
             Наступна розкладка: <span id="next-layout">ЙЦУКЕН</span>
@@ -536,7 +534,7 @@
         let isShiftActive = false;
         let cursorPosition = 0;
         let textArray = [];
-        let selectedControlButtonIndex = 0; // Початковий вибір кнопки "Очистити"
+        let selectedControlButtonIndex = 2; // Початковий вибір кнопки "Очистити"
 
         const layouts = {
             qwerty: {
@@ -839,6 +837,11 @@
                 shiftButton.classList.remove('active');
                 createKeyboard(currentLayout);
             }
+        });
+
+        // Заборона контекстного меню (правої кнопки миші)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
         });
 
         // Ініціалізація
