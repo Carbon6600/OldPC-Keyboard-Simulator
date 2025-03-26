@@ -239,7 +239,7 @@
             border: 3px solid;
             width: 100%;
             max-width: 600px;
-            height: 200px;
+            height: 150px; /* Зменшена висота для альбомного режиму */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -253,7 +253,7 @@
             padding: 8px;
             overflow-y: auto;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 18px;
+            font-size: 16px; /* Зменшений розмір шрифту */
             white-space: pre-wrap;
             word-wrap: break-word;
             border-radius: 4px;
@@ -279,14 +279,14 @@
         }
 
         .keyboard-layout button {
-            padding: 8px 4px;
+            padding: 6px 2px; /* Зменшений padding */
             font-size: 14px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             position: relative;
             transition: all 0.1s ease;
-            min-height: 40px;
+            min-height: 35px; /* Зменшена висота кнопок */
         }
 
         .keyboard-layout button:active {
@@ -334,7 +334,7 @@
         }
 
         .control-buttons button {
-            padding: 8px 4px;
+            padding: 6px 2px; /* Зменшений padding */
             font-size: 12px;
             border: none;
             border-radius: 3px;
@@ -364,7 +364,7 @@
 
         /* Стилі для перемикача тем */
         .theme-selector {
-            margin-top: 15px;
+            margin-top: 10px; /* Зменшений відступ */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -373,11 +373,11 @@
         }
 
         .theme-btn {
-            padding: 6px 10px;
+            padding: 4px 8px; /* Зменшений padding */
             border-radius: 15px;
             border: 1px solid transparent;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px; /* Зменшений розмір шрифту */
             transition: all 0.2s ease;
             flex-grow: 1;
             max-width: calc(33% - 6px);
@@ -445,26 +445,63 @@
             50% { opacity: 0; }
         }
 
-        /* Медіа-запити для дуже малих екранів */
-        @media (max-width: 400px) {
+        /* Медіа-запити для альбомного режиму */
+        @media (orientation: landscape) {
+            body {
+                padding: 5px;
+                justify-content: center;
+            }
+            
+            .monitor {
+                height: 120px; /* Ще менша висота в альбомному режимі */
+                margin-bottom: 5px;
+            }
+            
+            .screen {
+                font-size: 14px; /* Ще менший розмір шрифту */
+            }
+            
             .keyboard-layout button {
+                min-height: 30px; /* Ще менша висота кнопок */
                 font-size: 12px;
-                padding: 6px 2px;
-                min-height: 35px;
+                padding: 4px 1px;
             }
             
             .control-buttons button {
                 font-size: 10px;
-                padding: 6px 2px;
-            }
-            
-            .screen {
-                font-size: 16px;
+                padding: 4px 1px;
             }
             
             .theme-btn {
                 font-size: 10px;
-                padding: 4px 6px;
+                padding: 3px 6px;
+            }
+            
+            .layout-hint {
+                font-size: 10px;
+            }
+        }
+
+        /* Медіа-запити для дуже малих екранів */
+        @media (max-width: 400px) {
+            .keyboard-layout button {
+                font-size: 12px;
+                padding: 4px 1px;
+                min-height: 30px;
+            }
+            
+            .control-buttons button {
+                font-size: 10px;
+                padding: 4px 1px;
+            }
+            
+            .screen {
+                font-size: 14px;
+            }
+            
+            .theme-btn {
+                font-size: 9px;
+                padding: 2px 4px;
             }
         }
     </style>
